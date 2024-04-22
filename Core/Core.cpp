@@ -7,6 +7,8 @@
 #include <set>
 #include <fstream>
 #include <stack>
+#include <map>
+#include <unordered_map>
 #include "Utils.h"
 #include <wx/wx.h>
 
@@ -20,6 +22,7 @@ const std::string LeaderResources[4] = {
 struct InitialLeaderVals
 {
     std::string name;
+    std::string originalName;
     std::string iconPath;
     int leaderPickOrder;
     int statsID;
@@ -29,10 +32,19 @@ struct InitialLeaderVals
         std::vector<std::string> vals;
         GetAllStringsInLine(str, vals);
         name = vals[0];
+        originalName = name;
         iconPath = vals[1];
         leaderPickOrder = std::stoi(vals[2]);
         statsID = std::stoi(vals[3]);
         defaultPlayerSlotFlags = vals[4];
+    }
+    void Save(const std::string& line, std::string& saveBuildString)
+    {
+        std::vector<std::string> subStrings;
+        GetAllStringsInLine(line, subStrings, { '"', '"' }, true);
+        saveBuildString += (subStrings[0] + name + subStrings[1] + iconPath +
+            subStrings[2] + std::to_string(leaderPickOrder) + subStrings[3] +
+            std::to_string(statsID) + subStrings[4] + defaultPlayerSlotFlags + subStrings[5] + "\\n");
     }
 };
 
@@ -270,54 +282,22 @@ public:
             std::getline(file, line);
         }
     }
+    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString)
+    {
+        initialValues.Save(line, saveBuildString);
+
+    }
 };
 
 const std::string leadersPath = ("..\\ModData\\data\\leaders.xml");
-
-
-void LoadLeaders(std::vector<Leader>& leaders)
-{
-    leaders.clear();
-
-    std::ifstream file(leadersPath);
-    std::string line;
-    if (!file)
-    {
-        std::cout << "error loading file" << std::endl;
-        return;
-    }
-    //while (line.find("<Leader") != line.npos)
-    while (!StringContainsSubString(line, "</Leader"))
-    {
-        if (file.eof())
-        {
-            return;
-        }
-        std::getline(file, line);
-    }
-    std::getline(file, line);
-    while (!file.eof())
-    {
-        if (StringContainsSubString(line, "<Leader") && !StringContainsSubString(line, "Random") && !StringContainsSubString(line, "Test"))
-        {
-            leaders.emplace_back();
-            leaders.back().Load(file, line);
-        }
-        std::getline(file, line);
-    }
-}
-
-void SaveLeaders(const std::vector<Leader>& leaders)
-{
-
-}
 
 
 enum
 {
     ID_Hello = 1,
     ID_LoadLeaders = 2,
-    ID_DisplayLeaders = 3
+    ID_DisplayLeaders = 3,
+    ID_SaveLeaders = 4
 };
 
 enum class VarType
@@ -351,6 +331,27 @@ public:
         name = new wxStaticText(vals.frame, vals.ID, vals.name, vals.position);
         value = new wxTextCtrl(vals.frame, vals.ID+150, vals.existingValue, vals.position + wxPoint(200, 0));
     }
+    inline void ApplyChange()
+    {
+        if (vals.val != nullptr)
+        {
+            switch (vals.type)
+            {
+            case VarType::eString:
+                *(std::string*)vals.val = std::string(value->GetValue().mb_str());
+                break;
+            case VarType::eBool:
+                *(bool*)vals.val = std::string(value->GetValue().mb_str()) == "true" ? true : false;
+                break;
+            case VarType::eInt:
+                value->GetValue().ToInt((int*)vals.val);
+                //*(int*)vals.val = value->GetValue().ToInt();
+                break;
+            default:
+                break;
+            }
+        }
+    }
     ~EditBox()
     {
 
@@ -379,9 +380,102 @@ public:
         }
         Show();
     }
+    void ApplyChanges()
+    {
+        for (std::vector<EditBox>::iterator it = leaderEditBoxes.begin(); it != leaderEditBoxes.end(); it++)
+        {
+            it->ApplyChange();
+        }
+    }
     std::vector<EditBox> leaderEditBoxes;
     wxBoxSizer* sizer;
 };
+
+inline void LoadLeaders(std::vector<Leader>& leaders)
+{
+    leaders.clear();
+
+    std::ifstream file(leadersPath);
+    std::string line;
+    if (!file)
+    {
+        std::cout << "error loading file" << std::endl;
+        return;
+    }
+    //while (line.find("<Leader") != line.npos)
+    while (!StringContainsSubString(line, "</Leader"))
+    {
+        if (file.eof())
+        {
+            return;
+        }
+        std::getline(file, line);
+    }
+    std::getline(file, line);
+    while (!file.eof())
+    {
+        if (StringContainsSubString(line, "<Leader") && !StringContainsSubString(line, "Random") && !StringContainsSubString(line, "Test"))
+        {
+            leaders.emplace_back();
+            leaders.back().Load(file, line);
+        }
+        std::getline(file, line);
+    }
+}
+
+inline void ApplyChangedValues(std::vector<LeaderPane*>& panes)
+{
+    for (std::vector<LeaderPane*>::iterator it = panes.begin(); it != panes.end(); it++)
+    {
+        LeaderPane* p = *it;
+        p->ApplyChanges();
+    }
+}
+
+inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
+{
+    std::ifstream file(leadersPath);
+    std::string line;
+    if (!file)
+    {
+        std::cout << "failed to load file" << std::endl;
+    }
+
+    std::unordered_map<std::string, Leader&> leaderMap;
+    for (std::vector<Leader>::iterator it = leaders.begin(); it != leaders.end(); it++)
+    {
+        leaderMap.emplace(std::pair<std::string, Leader&>( it->initialValues.originalName, *it) );
+    }
+
+    while (!file.eof())
+    {
+        std::getline(file, line);
+        if (StringContainsSubString(line, "<Leader"))
+        {
+            std::vector<std::string> subStrings;
+            GetAllStringsInLine(line, subStrings);
+            if (!subStrings.empty()) {
+                if (leaderMap.find(subStrings[0]) != leaderMap.end())
+                {
+                    //found existing leader to override
+                    leaderMap.find(subStrings[0])->second.Save(file, line, str);
+                    leaderMap.erase(subStrings[0]);
+                    //leaderMap.erase(subStrings[0]);
+                }
+            }
+            //leader not editable
+        }
+        //no leader found
+        str += line + "\\n";
+    }
+}
+
+
+inline void SaveLeaders(std::vector<Leader>& leaders)
+{
+    std::string saveBuildString = "";
+    BuildSaveString(saveBuildString, leaders);
+}
 
 class MyFrame : public wxFrame
 {
@@ -404,6 +498,7 @@ public:
     MyFrame() :
         wxFrame(nullptr, wxID_ANY, "Hello World")
     {
+        leaders.reserve(10);
         leaderPanes.reserve(10);
 
         menuFile = new wxMenu;
@@ -418,6 +513,7 @@ public:
         leaderMenu = new wxMenu;
         leaderMenu->Append(ID_LoadLeaders, "&Load Leaders");
         leaderMenu->Append(ID_DisplayLeaders, "&Display Leaders");
+        leaderMenu->Append(ID_SaveLeaders, "&Save Leaders");
 
         menuBar = new wxMenuBar;
         menuBar->Append(menuFile, "&File");
@@ -446,6 +542,7 @@ public:
         Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderLoad, this, ID_LoadLeaders);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderDisplay, this, ID_DisplayLeaders);
+        Bind(wxEVT_MENU, &MyFrame::OnLeaderSave, this, ID_SaveLeaders);
 
     }
 private:
@@ -460,10 +557,6 @@ private:
     void OnLeaderLoad(wxCommandEvent& event)
     {
         LoadLeaders(leaders);
-    }
-    void OnScrollBar(wxCommandEvent& event)
-    {
-
     }
 
     inline void ShowLeaderDetails(std::vector<wxTextCtrl*>& texts, const std::vector<std::string>& strings, int x, int y, int i)
@@ -521,6 +614,12 @@ private:
         sizer->Add(panes.back(), wxEXPAND);
         this->FitInside();
         this->Show();
+    }
+
+    void OnLeaderSave(wxCommandEvent& event)
+    {
+        ApplyChangedValues(leaderPanes);
+        SaveLeaders(leaders);
     }
 
     void OnLeaderDisplay(wxCommandEvent& event)
