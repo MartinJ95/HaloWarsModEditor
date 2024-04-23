@@ -290,6 +290,7 @@ public:
 };
 
 const std::string leadersPath = ("..\\ModData\\data\\leaders.xml");
+const std::string leadersBackUpPath("..\\ModData\\data\\leadersBackUp.xml");
 
 
 enum
@@ -297,7 +298,8 @@ enum
     ID_Hello = 1,
     ID_LoadLeaders = 2,
     ID_DisplayLeaders = 3,
-    ID_SaveLeaders = 4
+    ID_SaveLeaders = 4,
+    ID_BackupLeaders = 5
 };
 
 enum class VarType
@@ -423,6 +425,36 @@ inline void LoadLeaders(std::vector<Leader>& leaders)
     }
 }
 
+inline void BackUpLeaders()
+{
+    std::ifstream file(leadersPath);
+    std::ofstream backup(leadersBackUpPath);
+    if (!file)
+    {
+        return;
+    }
+    if (!backup)
+    {
+        return;
+    }
+
+    file.seekg(0, file.end);
+    long size = file.tellg();
+    file.seekg(0);
+
+    char* buffer = new char[size];
+
+    file.read(buffer, size);
+
+    backup.write(buffer, size);
+
+    delete[] buffer;
+
+    file.close();
+
+    backup.close();
+}
+
 inline void ApplyChangedValues(std::vector<LeaderPane*>& panes)
 {
     for (std::vector<LeaderPane*>::iterator it = panes.begin(); it != panes.end(); it++)
@@ -514,6 +546,7 @@ public:
         leaderMenu->Append(ID_LoadLeaders, "&Load Leaders");
         leaderMenu->Append(ID_DisplayLeaders, "&Display Leaders");
         leaderMenu->Append(ID_SaveLeaders, "&Save Leaders");
+        leaderMenu->Append(ID_BackupLeaders, "&Backup Leaders");
 
         menuBar = new wxMenuBar;
         menuBar->Append(menuFile, "&File");
@@ -543,6 +576,7 @@ public:
         Bind(wxEVT_MENU, &MyFrame::OnLeaderLoad, this, ID_LoadLeaders);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderDisplay, this, ID_DisplayLeaders);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderSave, this, ID_SaveLeaders);
+        Bind(wxEVT_MENU, &MyFrame::OnLeaderBackUp, this, ID_BackupLeaders);
 
     }
 private:
@@ -620,6 +654,11 @@ private:
     {
         ApplyChangedValues(leaderPanes);
         SaveLeaders(leaders);
+    }
+
+    void OnLeaderBackUp(wxCommandEvent& event)
+    {
+        BackUpLeaders();
     }
 
     void OnLeaderDisplay(wxCommandEvent& event)
