@@ -5,7 +5,41 @@ struct Vec3
     float x;
     float y;
     float z;
+    std::string GetStringVersion()
+    {
+        return std::to_string(x) + ',' + std::to_string(y) + ',' + std::to_string(z);
+    }
 };
+
+inline std::string Stringify(const std::string& str)
+{
+    return '"' + str + '"';
+}
+
+inline std::string Stringify(const int value)
+{
+    return '"' + std::to_string(value) + '"';
+}
+
+inline std::string Valuefy(const std::string& str)
+{
+    return '>' + str + '<';
+}
+
+inline std::string Valuefy(const int value)
+{
+    return '>' + std::to_string(value) + '<';
+}
+
+inline std::string Fieldify(const std::string& str)
+{
+    return '<' + str + '>';
+}
+
+inline std::string Fieldify(const int value)
+{
+    return Fieldify(std::to_string(value));
+}
 
 bool StringContainsSubString(const std::string& Main, const std::string& SubString)
 {
@@ -38,7 +72,7 @@ bool StringContainsSubString(const std::string& Main, const std::string& SubStri
     return false;
 }
 
-void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Strings, const std::pair<char, char> TestingChars = { '"', '"' }, bool writing = false, bool alwaysWriting = false)
+void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Strings, const std::pair<char, char> TestingChars = { '"', '"' }, bool writing = false, const bool alwaysWriting = false)
 {
     Strings.clear();
 
@@ -46,7 +80,7 @@ void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Stri
 
     for (std::string::const_iterator it = Line.begin(); it != Line.end(); it++)
     {
-        if (*it == TestingChars.second && writing == true)
+        if (*it == TestingChars.second && writing == true || *it == TestingChars.first && alwaysWriting)
         {
             writing = alwaysWriting ? true : false;
             Strings.emplace_back(buildString);
@@ -67,4 +101,9 @@ void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Stri
     {
         Strings.emplace_back(buildString);
     }
+}
+
+void GetAllStringsInLine(const std::string& line, std::vector<std::string>& strings, const char TestingChar, bool writing = false, const bool alwaysWriting = false)
+{
+    GetAllStringsInLine(line, strings, { TestingChar, TestingChar }, writing, alwaysWriting);
 }
