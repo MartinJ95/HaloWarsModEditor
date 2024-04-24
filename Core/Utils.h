@@ -2,9 +2,9 @@
 
 struct Vec3
 {
-    float x;
-    float y;
-    float z;
+    int x;
+    int y;
+    int z;
     std::string GetStringVersion()
     {
         return std::to_string(x) + ',' + std::to_string(y) + ',' + std::to_string(z);
