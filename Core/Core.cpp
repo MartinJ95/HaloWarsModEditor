@@ -953,6 +953,12 @@ private:
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), scrolledWindow, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " unit", it->unitID, &it->unitID, VarType::eString, wxPoint(), scrolledWindow, 0 });
             }
+            for (std::vector<PopDefine>::iterator it = leaders[i].populations.begin(); it != leaders[i].populations.end(); it++)
+            {
+                vals.emplace_back(EditBoxVals{ "population type :", it->popType, &it->popType, VarType::eString, wxPoint(), scrolledWindow, 0 });
+                vals.emplace_back(EditBoxVals{ "population max :", std::to_string(it->max), &it->max, VarType::eInt, wxPoint(), scrolledWindow, 0 });
+                vals.emplace_back(EditBoxVals{ "population current :", std::to_string(it->current), &it->current, VarType::eInt, wxPoint(), scrolledWindow, 0 });
+            }
             ShowLeaderDetails(leaderPanes, vals,
                 400 * i,
                 20,
