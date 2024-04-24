@@ -22,17 +22,6 @@ const std::string LeaderResources[4] = {
 const std::string leadersPath = ("..\\ModData\\data\\leaders.xml");
 const std::string leadersBackUpPath("..\\ModData\\data\\leadersBackUp.xml");
 
-/*
-inline void SaveMultipleNames(std::ifstream& file, std::string& line, std::string& saveBuildString, const std::vector<std::string&>&& values)
-{
-    std::vector<std::string> substrings;
-
-    for (std::vector<std::string&>::const_iterator it = values.begin(); it != values.end(); it++)
-    {
-
-    }
-}*/
-
 inline void SaveMultipleValues(std::ifstream& file, std::string& line, std::string& saveBuildString, const std::vector<std::string>&& values)
 {
     std::vector<std::string> substrings;
@@ -145,24 +134,6 @@ struct CivDetails
                 std::vector<int>{nameID, descriptionID}
             )
         );
-
-        /*GetAllStringsInLine(line, substrings, {'>', '<'}, true);
-        saveBuildString += substrings[0] + Valuefy(civ) + substrings[1];
-
-        std::getline(file, line);
-
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(tech) + substrings[1];
-
-        std::getline(file, line);
-
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(nameID) + substrings[1];
-
-        std::getline(file, line);
-
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(descriptionID) + substrings[1];*/
     }
 };
 
@@ -207,22 +178,6 @@ struct FlashDetails
             flashImg, flashPortrait, UIControlBackground
         }
         ));
-        /*
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(flashImg) + substrings[1];
-
-        std::getline(file, line);
-
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(flashPortrait) + substrings[1];
-
-        std::getline(file, line);
-
-        GetAllStringsInLine(line, substrings, { '>', '<' }, true);
-        saveBuildString += substrings[0] + Valuefy(flashPortrait) + substrings[1];
-
-        std::getline(file, line);
-        */
     }
 };
 
@@ -256,10 +211,6 @@ struct StartingUnit
 
         GetAllStringsInLine(line, strings, '"', true, true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        /*
-        buildSaveString += strings[0] + Stringify(offset.GetStringVersion()) + strings[1] + Stringify(buildOther) + strings[2] + (doppleOnStart ? "true" : "false")
-            + strings[3] + socket + '<' + nstrings[1] + "\n";
-        */
         buildSaveString += strings[0] + Stringify(offset.GetStringVersion()) + strings[2] + Stringify(buildOther) + strings[4] + Stringify(doppleOnStart ? "true" : "false") + '>' + socket + Fieldify(nstrings[3]) + "\n";
     }
 };
@@ -292,7 +243,6 @@ struct StartingSquad
         GetAllStringsInLine(line, strings, '"', true, true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
 
-        //buildSaveString += strings[0] + (flyIn ? "true" : "false") + strings[1] + Stringify(offset.GetStringVersion()) + strings[2] + Valuefy(unitID) + nstrings[1] + "\n";
         buildSaveString += strings[0] + Stringify(flyIn ? "true" : "false") + strings[2] + Stringify(offset.GetStringVersion()) + '>' + unitID + Fieldify(nstrings[3]) + "\n";
     }
 };
@@ -338,7 +288,6 @@ struct StartingProperties
         for (int i = 0; i < 4; i++)
         {
             GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-            //saveBuildString += nstrings[0] + Valuefy(leaderResources[i].second) + nstrings[1] + "\n";
             saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + std::to_string(leaderResources[i].second) + Fieldify(nstrings[3]) + "\n";
             std::getline(file, line);
         }
@@ -351,7 +300,6 @@ struct StartingProperties
             std::getline(file, line);
         }
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        //saveBuildString += nstrings[0] + Valuefy(rallyPointOffset.GetStringVersion()) + nstrings[1] + "\n";
         saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + rallyPointOffset.GetStringVersion() + Fieldify(nstrings[3]) + "\n";
         std::getline(file, line);
     }
@@ -394,30 +342,23 @@ struct RepairProperties
         std::vector<std::string> strings;
         std::vector<std::string> nstrings;
 
-        GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        //saveBuildString += nstrings[0] + Valuefy(repairRate) + nstrings[1] + "\n";
-        saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + std::to_string(repairRate) + Fieldify(nstrings[3]) + "\n";
+        auto save = [](const std::string& str, std::string& line, std::ifstream& f, std::string& sbs, std::vector<std::string>& nstrings) {
+            GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
+            sbs += nstrings[0] + Fieldify(nstrings[1]) + str + Fieldify(nstrings[3]) + "\n";
 
-        std::getline(file, line);
+            std::getline(f, line);
+            };
 
-        GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        //saveBuildString += nstrings[0] + Valuefy(repairDelay) + nstrings[1] + "\n";
-        saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + std::to_string(repairDelay) + Fieldify(nstrings[3]) + "\n";
-
-        std::getline(file, line);
+        save(std::to_string(repairRate), line, file, saveBuildString, nstrings);
+        save(std::to_string(repairDelay), line, file, saveBuildString, nstrings);
 
         GetAllStringsInLine(line, strings, '"', true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
 
-        //saveBuildString += strings[0] + Stringify(repairCost.first) + Valuefy(repairCost.second) + nstrings[1] + "\n";
         saveBuildString += strings[0] + Stringify(repairCost.first) + '>' + std::to_string(repairCost.second) + Fieldify(nstrings[3]) + "\n";
         std::getline(file, line);
 
-        GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        //saveBuildString += nstrings[0] + Valuefy(repairTime) + nstrings[1] + "\n";
-        saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + std::to_string(repairTime) + Fieldify(nstrings[3]) + "\n";
-
-        std::getline(file, line);
+        save(std::to_string(repairTime), line, file, saveBuildString, nstrings);
     }
 };
 
@@ -610,6 +551,11 @@ public:
     {
         for (std::vector<EditBox>::iterator it = leaderEditBoxes.begin(); it != leaderEditBoxes.end(); it++)
         {
+            // todo
+            // for each box that is an addable or subtractable type such as populations or starting squads
+            // find out that it is that type
+            // add button to respond adding or removing the type
+            // update pane when done
             sizer->Add(it->name, wxEXPAND);
             sizer->Add(it->value, wxEXPAND);
         }
@@ -622,6 +568,10 @@ public:
             it->ApplyChange();
         }
     }
+    wxButton* addPopulation;
+    wxButton* clearPopulations;
+    wxButton* addStartingSquad;
+    wxButton* clearStartingSquads;
     std::vector<EditBox> leaderEditBoxes;
     wxBoxSizer* sizer;
 };
@@ -771,12 +721,12 @@ protected:
     std::vector<Leader> leaders;
 public:
     MyFrame() :
-        wxFrame(nullptr, wxID_ANY, "Hello World")
+        wxFrame(nullptr, wxID_ANY, "Halo Wars Mod Editor")
     {
         leaders.reserve(10);
         leaderPanes.reserve(10);
 
-        menuFile = new wxMenu;
+        /*menuFile = new wxMenu;
         menuFile->Append(ID_Hello, "&Hello...\tCtrl+H",
             "Help string shown in status bar for this menu item");
         menuFile->AppendSeparator();
@@ -784,7 +734,7 @@ public:
 
         menuHelp = new wxMenu;
         menuHelp->Append(wxID_ABOUT);
-
+        */
         leaderMenu = new wxMenu;
         leaderMenu->Append(ID_LoadLeaders, "&Load Leaders");
         leaderMenu->Append(ID_DisplayLeaders, "&Display Leaders");
@@ -792,8 +742,8 @@ public:
         leaderMenu->Append(ID_BackupLeaders, "&Backup Leaders");
 
         menuBar = new wxMenuBar;
-        menuBar->Append(menuFile, "&File");
-        menuBar->Append(menuHelp, "&Help");
+        //menuBar->Append(menuFile, "&File");
+        //menuBar->Append(menuHelp, "&Help");
         menuBar->Append(leaderMenu, "Leaders");
 
         SetMenuBar(menuBar);
@@ -965,59 +915,6 @@ private:
                 i
                 );
         }
-
-        /*for (int i = 0; i < leaders.size(); i++)
-        {
-            ShowLeaderDetails(leaderDetails, std::vector<std::string>{
-                std::string("name: " + leaders[i].initialValues.name),
-                    std::string("icon path: " + leaders[i].initialValues.iconPath),
-                    std::string("leader pick order: " + std::to_string(leaders[i].initialValues.leaderPickOrder)),
-                    std::string("stats id: " + std::to_string(leaders[i].initialValues.statsID)),
-                    std::string("default player slot flags: " + leaders[i].initialValues.defaultPlayerSlotFlags),
-                    std::string("civ: " + leaders[i].civDetails.civ),
-                    std::string("tech: " + leaders[i].civDetails.tech),
-                    std::string("name id: " + std::to_string(leaders[i].civDetails.nameID)),
-                    std::string("description id: " + std::to_string(leaders[i].civDetails.descriptionID)),
-                    std::string("flash id: " + std::to_string(leaders[i].flashDetails.flashID)),
-                    std::string("flash image: " + leaders[i].flashDetails.flashImg),
-                    std::string("flash portrait: " + leaders[i].flashDetails.flashPortrait),
-                    std::string("UI control background: " + leaders[i].flashDetails.UIControlBackground),
-                    std::string("resource:"),
-                    leaders[i].startProperties.leaderResources[0].first,
-                    std::to_string(leaders[i].startProperties.leaderResources[0].second),
-                    std::string("resource:"),
-                    leaders[i].startProperties.leaderResources[1].first,
-                    std::to_string(leaders[i].startProperties.leaderResources[1].second),
-                    std::string("resource:"),
-                    leaders[i].startProperties.leaderResources[2].first,
-                    std::to_string(leaders[i].startProperties.leaderResources[2].second),
-                    std::string("resource:"),
-                    leaders[i].startProperties.leaderResources[3].first,
-                    std::to_string(leaders[i].startProperties.leaderResources[3].second),
-                    std::string("rally point offset: " + std::to_string(leaders[i].startProperties.rallyPointOffset.x) + "'" +
-                        std::to_string(leaders[i].startProperties.rallyPointOffset.y) + "'" +
-                        std::to_string(leaders[i].startProperties.rallyPointOffset.z)),
-                    leaders[i].startProperties.startingSquads[0].flyIn ? std::string("true") : std::string("false"),
-                    std::string("starting squad offset: " + std::to_string(leaders[i].startProperties.startingSquads[0].offset.x) + "'" +
-                        std::to_string(leaders[i].startProperties.startingSquads[0].offset.y) + "'" +
-                        std::to_string(leaders[i].startProperties.startingSquads[0].offset.z)),
-                    std::string("unit id: " + leaders[i].startProperties.startingSquads[0].unitID),
-                    std::string("build other: " + leaders[i].startProperties.startUnit.buildOther),
-                    std::string("dopple on start: " + leaders[i].startProperties.startUnit.doppleOnStart ? std::string("true") : std::string("false")),
-                    std::string("starting unit offset: " + std::to_string(leaders[i].startProperties.startUnit.offset.x) + "'" +
-                        std::to_string(leaders[i].startProperties.startUnit.offset.y) + "'" +
-                        std::to_string(leaders[i].startProperties.startUnit.offset.z)),
-                    std::string("start unit socket: " + leaders[i].startProperties.startUnit.socket),
-                    std::string("repair cost: " + leaders[i].repairProperties.repairCost.first + " : " + std::to_string(leaders[i].repairProperties.repairCost.second)),
-                    std::string("repair delay: " + std::to_string(leaders[i].repairProperties.repairDelay)),
-                    std::string("repair rate: " + std::to_string(leaders[i].repairProperties.repairRate)),
-                    std::string("repair time " + std::to_string(leaders[i].repairProperties.repairTime))
-            },
-                600 * i,
-                20,
-                i
-            );
-        }*/
         scrolledWindow->FitInside();
         for (std::vector<LeaderPane*>::iterator it = leaderPanes.begin(); it != leaderPanes.end(); it++)
         {
