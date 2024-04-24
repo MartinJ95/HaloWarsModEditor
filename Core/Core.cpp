@@ -920,8 +920,8 @@ private:
 
         for (int i = 0; i < leaders.size(); i++)
         {
-            ShowLeaderDetails(leaderPanes, std::vector<EditBoxVals>{
-                { "name: ", leaders[i].initialValues.name, & leaders[i].initialValues.name, VarType::eString, wxPoint(), scrolledWindow, 0},
+            std::vector<EditBoxVals> vals{
+                { "name: ", leaders[i].initialValues.name, &leaders[i].initialValues.name, VarType::eString, wxPoint(), scrolledWindow, 0 },
                 {"icon path: ", leaders[i].initialValues.iconPath,&leaders[i].initialValues.iconPath, VarType::eString, wxPoint(), scrolledWindow, 0},
                 {"leader pick order: ", std::to_string(leaders[i].initialValues.leaderPickOrder), &leaders[i].initialValues.leaderPickOrder, VarType::eInt, wxPoint(), scrolledWindow, 0},
                 {"stats id: ", std::to_string(leaders[i].initialValues.statsID), &leaders[i].initialValues.statsID, VarType::eInt, wxPoint(), scrolledWindow, 0},
@@ -935,18 +935,25 @@ private:
                 {"flash portrait: ", leaders[i].flashDetails.flashPortrait, &leaders[i].flashDetails.flashPortrait, VarType::eString, wxPoint(), scrolledWindow, 0},
                 {"resource: " + leaders[i].startProperties.leaderResources[0].first, std::to_string(leaders[i].startProperties.leaderResources[0].second), &leaders[i].startProperties.leaderResources[0].second, VarType::eInt, wxPoint(), scrolledWindow, 0},
                 { "resource: " + leaders[i].startProperties.leaderResources[1].first, std::to_string(leaders[i].startProperties.leaderResources[1].second), &leaders[i].startProperties.leaderResources[1].second, VarType::eInt, wxPoint(), scrolledWindow, 0 },
-                {"resource: " + leaders[i].startProperties.leaderResources[2].first, std::to_string(leaders[i].startProperties.leaderResources[2].second), & leaders[i].startProperties.leaderResources[2].second, VarType::eInt, wxPoint(), scrolledWindow, 0},
-                {"resource: " + leaders[i].startProperties.leaderResources[3].first, std::to_string(leaders[i].startProperties.leaderResources[3].second), & leaders[i].startProperties.leaderResources[3].second, VarType::eInt, wxPoint(), scrolledWindow, 0},
+                {"resource: " + leaders[i].startProperties.leaderResources[2].first, std::to_string(leaders[i].startProperties.leaderResources[2].second), &leaders[i].startProperties.leaderResources[2].second, VarType::eInt, wxPoint(), scrolledWindow, 0},
+                {"resource: " + leaders[i].startProperties.leaderResources[3].first, std::to_string(leaders[i].startProperties.leaderResources[3].second), &leaders[i].startProperties.leaderResources[3].second, VarType::eInt, wxPoint(), scrolledWindow, 0},
                 {"rally point offset.x: ", std::to_string(leaders[i].startProperties.rallyPointOffset.x), &leaders[i].startProperties.rallyPointOffset.x, VarType::eInt, wxPoint(), scrolledWindow, 0},
                 { "rally point offset.y: ", std::to_string(leaders[i].startProperties.rallyPointOffset.y), &leaders[i].startProperties.rallyPointOffset.y, VarType::eInt, wxPoint(), scrolledWindow, 0 },
                 { "rally point offset.z: ", std::to_string(leaders[i].startProperties.rallyPointOffset.z), &leaders[i].startProperties.rallyPointOffset.z, VarType::eInt, wxPoint(), scrolledWindow, 0 },
                 {"starting unit offset.x ", std::to_string(leaders[i].startProperties.startUnit.offset.x), &leaders[i].startProperties.startingSquads[0].offset.x, VarType::eInt, wxPoint(), scrolledWindow, 0},
                 { "starting unit offset.y ", std::to_string(leaders[i].startProperties.startUnit.offset.y), &leaders[i].startProperties.startingSquads[0].offset.y, VarType::eInt, wxPoint(), scrolledWindow, 0 },
                 { "starting unit offset.z ", std::to_string(leaders[i].startProperties.startUnit.offset.z), &leaders[i].startProperties.startingSquads[0].offset.z, VarType::eInt, wxPoint(), scrolledWindow, 0 },
-                {"starting unit Socket: ", leaders[i].startProperties.startUnit.socket, &leaders[i].startProperties.startUnit.socket , VarType::eString, wxPoint(), scrolledWindow, 0},
-                
-
-            },
+                {"starting unit Socket: ", leaders[i].startProperties.startUnit.socket, &leaders[i].startProperties.startUnit.socket , VarType::eString, wxPoint(), scrolledWindow, 0}
+            };
+            for (std::vector<StartingSquad>::iterator it = leaders[i].startProperties.startingSquads.begin(); it != leaders[i].startProperties.startingSquads.end(); it++)
+            {
+                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " fly in:", std::string(it->flyIn ? "true" : "false"), &it->flyIn, VarType::eBool, wxPoint(), scrolledWindow, 0 });
+                vals.emplace_back(EditBoxVals{"start squad " + std::to_string(i) + " offset.x:", std::to_string(it->offset.x), &it->offset.x, VarType::eInt, wxPoint(), scrolledWindow, 0});
+                vals.emplace_back(EditBoxVals{"start squad " + std::to_string(i) + " offset.y:", std::to_string(it->offset.y), &it->offset.y, VarType::eInt, wxPoint(), scrolledWindow, 0});
+                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), scrolledWindow, 0 });
+                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " unit", it->unitID, &it->unitID, VarType::eString, wxPoint(), scrolledWindow, 0 });
+            }
+            ShowLeaderDetails(leaderPanes, vals,
                 400 * i,
                 20,
                 i
