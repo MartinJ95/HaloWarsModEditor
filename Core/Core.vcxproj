@@ -130,8 +130,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="ElementWindow.cpp" />
+    <ClCompile Include="Leaders.cpp" />
+    <ClCompile Include="LeaderUIHandler.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ElementWindow.h" />
+    <ClInclude Include="Leaders.h" />
+    <ClInclude Include="LeaderUIHandler.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,120 @@
 #pragma once
+#include <iostream>
+#include <stack>
+#include "wx/wx.h"
+
+enum
+{
+    ID_Hello = 1,
+    ID_LoadLeaders = 2,
+    ID_DisplayLeaders = 3,
+    ID_SaveLeaders = 4,
+    ID_BackupLeaders = 5
+};
+
+enum class VarType
+{
+    eString,
+    eBool,
+    eInt
+};
+
+enum class WindowType
+{
+    eLeaders = 0
+};
+
+struct EditBoxVals
+{
+    std::string name;
+    std::string existingValue;
+    void* val;
+    VarType type;
+    wxPoint position;
+    wxWindow* frame;
+    int ID;
+};
+
+class EditBox
+{
+public:
+    EditBox()
+    {}
+    EditBox(EditBoxVals Vals)
+    {
+        vals = Vals;
+        name = new wxStaticText(vals.frame, vals.ID, vals.name, vals.position);
+        value = new wxTextCtrl(vals.frame, vals.ID + 150, vals.existingValue, vals.position + wxPoint(200, 0));
+    }
+    inline void ApplyChange()
+    {
+        if (vals.val != nullptr)
+        {
+            switch (vals.type)
+            {
+            case VarType::eString:
+                *(std::string*)vals.val = std::string(value->GetValue().mb_str());
+                break;
+            case VarType::eBool:
+                *(bool*)vals.val = std::string(value->GetValue().mb_str()) == "true" ? true : false;
+                break;
+            case VarType::eInt:
+                value->GetValue().ToInt((int*)vals.val);
+                //*(int*)vals.val = value->GetValue().ToInt();
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    ~EditBox()
+    {
+
+    }
+    wxStaticText* name = nullptr;
+    wxTextCtrl* value = nullptr;
+    EditBoxVals vals;
+};
+
+
+struct AddableType
+{
+    int ID;
+    std::vector<AddableType>* owningVec;
+    wxButton* subtractionButton;
+    std::vector<EditBox> editBoxes;
+    const bool operator==(const AddableType& other)
+    {
+        return ID == other.ID;
+    }
+    AddableType(std::vector<AddableType>* OwningVec, int id, std::vector<EditBoxVals>& vals) : owningVec(OwningVec), ID(id)
+    {
+        for (std::vector<EditBoxVals>::iterator it = vals.begin(); it != vals.end(); it++)
+        {
+            editBoxes.emplace_back(*it);
+        }
+    }
+    void TakeAwayType()
+    {
+        for (std::vector<AddableType>::iterator it = owningVec->begin(); it != owningVec->end(); it++)
+        {
+            if (*it == *this)
+            {
+                CleanUp();
+                owningVec->erase(it);
+                return;
+            }
+        }
+    }
+    void CleanUp()
+    {
+        for (std::vector<EditBox>::iterator it = editBoxes.begin(); it != editBoxes.end(); it++)
+        {
+            delete it->name;
+            delete it->value;
+        }
+    }
+};
 
 struct Vec3
 {
@@ -41,7 +157,7 @@ inline std::string Fieldify(const int value)
     return Fieldify(std::to_string(value));
 }
 
-bool StringContainsSubString(const std::string& Main, const std::string& SubString)
+inline bool StringContainsSubString(const std::string& Main, const std::string& SubString)
 {
     std::stack<char> lettersToTest;
     std::stack<char> foundLetters;
@@ -72,7 +188,7 @@ bool StringContainsSubString(const std::string& Main, const std::string& SubStri
     return false;
 }
 
-void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Strings, const std::pair<char, char> TestingChars = { '"', '"' }, bool writing = false, const bool alwaysWriting = false)
+inline void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Strings, const std::pair<char, char> TestingChars = { '"', '"' }, bool writing = false, const bool alwaysWriting = false)
 {
     Strings.clear();
 
@@ -103,7 +219,7 @@ void GetAllStringsInLine(const std::string& Line, std::vector<std::string>& Stri
     }
 }
 
-void GetAllStringsInLine(const std::string& line, std::vector<std::string>& strings, const char TestingChar, bool writing = false, const bool alwaysWriting = false)
+inline void GetAllStringsInLine(const std::string& line, std::vector<std::string>& strings, const char TestingChar, bool writing = false, const bool alwaysWriting = false)
 {
     GetAllStringsInLine(line, strings, { TestingChar, TestingChar }, writing, alwaysWriting);
 }
