@@ -113,9 +113,9 @@ struct AddableType
             delete it->name;
             delete it->value;
         }
+        delete subtractionButton;
         containedWindow->FitInside();
         containedWindow->Show();
-        delete subtractionButton;
     }
 };
 

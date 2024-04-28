@@ -61,6 +61,10 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const s
         //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().value);
     }
     panes.back()->AddBoxesToSizer();
+    panes.back()->addPopulation = new wxButton(panes.back(), wxID_ANY, "add new population");
+    panes.back()->sizer->Add(panes.back()->addPopulation);
+    LeaderPane* p = panes.back();
+    panes.back()->addPopulation->Bind(wxEVT_BUTTON, &LeaderPane::AddPopulation, p);
     panes.back()->LoadPopulations(refferedLeader);
     parent->sizer->Add(panes.back(), wxEXPAND);
     parent->FitInside();

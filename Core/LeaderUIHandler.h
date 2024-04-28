@@ -58,11 +58,31 @@ public:
             it->ApplyChange();
         }
     }
-    void AddPopulation()
+    void AddPopulation(wxCommandEvent &event)
     {
+        populations.emplace_back(this, &populations,
+            std::vector<EditBoxVals>{
+            EditBoxVals{ "population type :", "new population", nullptr, VarType::eString, wxPoint(), (wxFrame*)this, 0 },
+            EditBoxVals{ "population max:", "1", nullptr, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+            EditBoxVals{ "population current :", "1", nullptr, VarType::eInt, wxPoint(), (wxFrame*)this, 0 }
+        });
+        populations.back().subtractionButton = new wxButton(this, wxID_ANY, std::string("remove pop: "));
+        
+        sizer->Add(populations.back().subtractionButton);
+        for (int i = 0; i < 3; i++)
+        {
+            sizer->Add(populations.back().editBoxes[i].name);
+            sizer->Add(populations.back().editBoxes[i].value);
+        }
 
+        for (std::vector<AddableType>::iterator it = populations.begin(); it != populations.end(); it++)
+        {
+            it->subtractionButton->Bind(wxEVT_BUTTON, &AddableType::TakeAwayType, &*it);
+        }
+        FitInside();
+        Show();
     }
-    void AddStartingSquad()
+    void AddStartingSquad(wxCommandEvent& event)
     {
 
     }
