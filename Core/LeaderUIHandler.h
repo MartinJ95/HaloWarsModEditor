@@ -21,14 +21,35 @@ public:
             sizer->Add(it->name, wxEXPAND);
             sizer->Add(it->value, wxEXPAND);
         }
+        FitInside();
         Show();
     }
-    void LoadPopulations(const Leader& leader)
+    void LoadPopulations(Leader& leader)
     {
-        for (std::vector<PopDefine>::const_iterator it = leader.populations.begin(); it != leader.populations.end(); it++)
+        int uniqueCount = 0;
+        for (std::vector<PopDefine>::iterator it = leader.populations.begin(); it != leader.populations.end(); it++)
         {
-
+            populations.emplace_back(this, &populations,
+                std::vector<EditBoxVals>{
+                EditBoxVals{ "population type :", it->popType, &it->popType, VarType::eString, wxPoint(), (wxFrame*)this, 0 },
+                EditBoxVals{"population max :", std::to_string(it->max), &it->max, VarType::eInt, wxPoint(), (wxFrame*)this, 0},
+                EditBoxVals{"population current :", std::to_string(it->current), &it->current, VarType::eInt, wxPoint(), (wxFrame*)this, 0}
+            });
+            populations.back().subtractionButton = new wxButton(this, wxID_ANY, std::string("remove pop: ") + leader.initialValues.name + ": " + it->popType);
+            sizer->Add(populations.back().subtractionButton);
+            //populations.back().subtractionButton->Bind(wxEVT_BUTTON, &AddableType::TakeAwayType, &populations.back());
+            for (std::vector<EditBox>::iterator it2 = populations.back().editBoxes.begin(); it2 != populations.back().editBoxes.end(); it2++)
+            {
+                sizer->Add(it2->name);
+                sizer->Add(it2->value);
+            }
         }
+        for (std::vector<AddableType>::iterator it = populations.begin(); it != populations.end(); it++)
+        {
+            it->subtractionButton->Bind(wxEVT_BUTTON, &AddableType::TakeAwayType, &*it);
+        }
+        FitInside();
+        Show();
     }
     void ApplyChanges()
     {
@@ -191,7 +212,7 @@ public:
 
     void ShowLeaderDetails(std::vector<EditBox>& EditValues, const std::vector<EditBoxVals>& Vals, int x, int y, int i);
 
-    void ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i);
+    void ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i, Leader& refferedLeader);
     void DisplayLeaders();
     
     void LeaderLoad()
@@ -199,7 +220,5 @@ public:
         LoadLeaders(leaders);
     }
     std::vector<Leader> leaders;
-    //std::vector<wxTextCtrl*> leaderDetails;
-    //std::vector<EditBox> leaderEditBoxes;
     std::vector<LeaderPane*> leaderPanes;
 };

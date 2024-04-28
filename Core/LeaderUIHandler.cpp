@@ -38,7 +38,7 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<EditBox>& EditValues, const 
     }
 }
 
-void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i)
+void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i, Leader& refferedLeader)
 {
     panes.emplace_back();
     panes.back() = new LeaderPane(parent, wxID_ANY);
@@ -61,6 +61,7 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const s
         //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().value);
     }
     panes.back()->AddBoxesToSizer();
+    panes.back()->LoadPopulations(refferedLeader);
     parent->sizer->Add(panes.back(), wxEXPAND);
     parent->FitInside();
     parent->Show();
@@ -116,17 +117,20 @@ void LeaderUIHandler::DisplayLeaders()
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " unit", it->unitID, &it->unitID, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });
             }
-            for (std::vector<PopDefine>::iterator it = leaders[i].populations.begin(); it != leaders[i].populations.end(); it++)
+            /*for (std::vector<PopDefine>::iterator it = leaders[i].populations.begin(); it != leaders[i].populations.end(); it++)
             {
                 vals.emplace_back(EditBoxVals{ "population type :", it->popType, &it->popType, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "population max :", std::to_string(it->max), &it->max, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "population current :", std::to_string(it->current), &it->current, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-            }
+            }*/
             ShowLeaderDetails(leaderPanes, vals,
                 400 * i,
                 20,
-                i
+                i,
+                leaders[i]
             );
+            parent->FitInside();
+            parent->Show();
         }
         //parent->FitInside();
         for (std::vector<LeaderPane*>::iterator it = leaderPanes.begin(); it != leaderPanes.end(); it++)

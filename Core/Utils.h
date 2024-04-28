@@ -79,26 +79,26 @@ public:
 
 struct AddableType
 {
-    int ID;
+    wxWindow* containedWindow;
     std::vector<AddableType>* owningVec;
     wxButton* subtractionButton;
     std::vector<EditBox> editBoxes;
-    const bool operator==(const AddableType& other)
+    /*const bool operator==(const AddableType& other)
     {
         return ID == other.ID;
-    }
-    AddableType(std::vector<AddableType>* OwningVec, int id, std::vector<EditBoxVals>& vals) : owningVec(OwningVec), ID(id)
+    }*/
+    AddableType(wxWindow* window, std::vector<AddableType>* OwningVec, const std::vector<EditBoxVals>& vals) : containedWindow(window), owningVec(OwningVec)
     {
-        for (std::vector<EditBoxVals>::iterator it = vals.begin(); it != vals.end(); it++)
+        for (std::vector<EditBoxVals>::const_iterator it = vals.begin(); it != vals.end(); it++)
         {
             editBoxes.emplace_back(*it);
         }
     }
-    void TakeAwayType()
+    void TakeAwayType(wxCommandEvent &event)
     {
         for (std::vector<AddableType>::iterator it = owningVec->begin(); it != owningVec->end(); it++)
         {
-            if (*it == *this)
+            if (&*it == &*this)
             {
                 CleanUp();
                 owningVec->erase(it);
@@ -113,6 +113,9 @@ struct AddableType
             delete it->name;
             delete it->value;
         }
+        containedWindow->FitInside();
+        containedWindow->Show();
+        delete subtractionButton;
     }
 };
 
