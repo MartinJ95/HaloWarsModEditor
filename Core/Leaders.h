@@ -172,10 +172,20 @@ struct StartingProperties
         startUnit.Load(str, strings, nstrings);
         std::getline(Stream, str);
 
+        while (StringContainsSubString(str, "StartingSquad"))
+        {
+            startingSquads.emplace_back();
+            startingSquads.back().Load(str, strings, nstrings);
+
+            std::getline(Stream, str);
+        }
+
+        /*
         startingSquads.emplace_back();
         startingSquads.back().Load(str, strings, nstrings);
 
         std::getline(Stream, str);
+        */
 
         std::vector<std::string> vecVals;
 
