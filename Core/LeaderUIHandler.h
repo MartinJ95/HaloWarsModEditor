@@ -14,6 +14,33 @@ public:
         this->FitInside();
         this->SetScrollRate(0, 5);
     }
+    LeaderPane(Leader* Ref, wxWindow* parent, wxWindowID ID, const std::vector<EditBoxVals>& Vals) : wxScrolledWindow(parent, ID, wxDefaultPosition, wxSize(200, 600)), ref(Ref)
+    {
+        sizer = new wxBoxSizer(wxVERTICAL);
+        this->SetSizer(sizer);
+        this->FitInside();
+        this->SetScrollRate(0, 5);
+
+        for (int j = 0; j < Vals.size(); j++)
+        {
+            EditBoxVals val;
+            //final.frame = Vals[j].frame;
+            //final.frame = scrolledWindow;
+            //val.frame = leaderPanes.back();
+            val.frame = this;
+            val.name = Vals[j].name;
+            val.existingValue = Vals[j].existingValue;
+            val.type = Vals[j].type;
+            val.val = Vals[j].val;
+            val.ID = wxID_ANY;
+            val.position = wxPoint();
+            //val.ID = 50 + j + (50 * i);
+            //val.position = wxPoint(x, y + y * j);
+            leaderEditBoxes.emplace_back(val);
+            //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().name);
+            //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().value);
+        }
+    }
     void AddBoxesToSizer()
     {
         for (std::vector<EditBox>::iterator it = leaderEditBoxes.begin(); it != leaderEditBoxes.end(); it++)
@@ -50,6 +77,33 @@ public:
         FitInside();
         Show();
     }
+    void LoadStartingSquads(Leader& leader)
+    {
+        for (std::vector<StartingSquad>::iterator it = leader.startProperties.startingSquads.begin(); it != leader.startProperties.startingSquads.end(); it++)
+        {
+            squads.emplace_back(this, &squads,
+                std::vector<EditBoxVals>{
+                EditBoxVals{ "squad fly in :" , it->flyIn ? "true" : "false", &it->flyIn, VarType::eBool, wxPoint(), (wxFrame*)this, 0 },
+                    EditBoxVals{ "squad offset x:", std::to_string(it->offset.x), &it->offset.x, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+                    EditBoxVals{ "squad offset y:", std::to_string(it->offset.y), &it->offset.y, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+                    EditBoxVals{ "squad offset z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+                    EditBoxVals{ "squad id :", it->unitID, &it->unitID, VarType::eString, wxPoint(), (wxFrame*)this, 0 }
+            });
+            squads.back().subtractionButton = new wxButton(this, wxID_ANY, std::string("remove squad"));
+            sizer->Add(squads.back().subtractionButton);
+            for (std::vector<EditBox>::iterator it2 = squads.back().editBoxes.begin(); it2 != squads.back().editBoxes.end(); it2++)
+            {
+                sizer->Add(it2->name);
+                sizer->Add(it2->value);
+            }
+        }
+        for (std::vector<AddableType>::iterator it = squads.begin(); it != squads.end(); it++)
+        {
+            it->subtractionButton->Bind(wxEVT_BUTTON, &AddableType::TakeAwayType, &*it);
+        }
+        FitInside();
+        Show();
+    }
     void ApplyChanges()
     {
         for (std::vector<EditBox>::iterator it = leaderEditBoxes.begin(); it != leaderEditBoxes.end(); it++)
@@ -66,6 +120,19 @@ public:
                         it->editBoxes[0].value->GetValue().ToStdString(),
                         std::stoi(it->editBoxes[1].value->GetValue().ToStdString()),
                         std::stoi(it->editBoxes[2].value->GetValue().ToStdString()) }
+                );
+            }
+            ref->startProperties.startingSquads.clear();
+            for (std::vector<AddableType>::iterator it = squads.begin(); it != squads.end(); it++)
+            {
+                ref->startProperties.startingSquads.emplace_back(
+                    StartingSquad{
+                        it->editBoxes[0].value->GetValue().ToStdString() == "true" ? true : false,
+                        std::stoi(it->editBoxes[1].value->GetValue().ToStdString()),
+                        std::stoi(it->editBoxes[2].value->GetValue().ToStdString()),
+                        std::stoi(it->editBoxes[3].value->GetValue().ToStdString()),
+                        it->editBoxes[4].value->GetValue().ToStdString()
+                    }
                 );
             }
         }
@@ -96,7 +163,29 @@ public:
     }
     void AddStartingSquad(wxCommandEvent& event)
     {
+        squads.emplace_back(this, &squads,
+            std::vector<EditBoxVals>{
+            EditBoxVals{ "Starting Squad fly in :", "true", nullptr, VarType::eBool, wxPoint(), (wxFrame*)this, 0 },
+                EditBoxVals{ "squad offset x:", "0", nullptr, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+                EditBoxVals{ "squad offset y:", "0", nullptr, VarType::eInt, wxPoint(), (wxFrame*)this, 0 },
+                EditBoxVals{ "squad offset z:", "0", nullptr, VarType::eInt, wxPoint(), (wxFrame*)this, 0},
+                EditBoxVals{ "squad id :", "unit id", nullptr, VarType::eString, wxPoint(), (wxFrame*)this, 0 }
+        });
+        squads.back().subtractionButton = new wxButton(this, wxID_ANY, std::string("remove squad: "));
 
+        sizer->Add(squads.back().subtractionButton);
+        for (std::vector<EditBox>::iterator it = squads.back().editBoxes.begin(); it != squads.back().editBoxes.end(); it++)
+        {
+            sizer->Add(it->name);
+            sizer->Add(it->value);
+        }
+
+        for (std::vector<AddableType>::iterator it = squads.begin(); it != squads.end(); it++)
+        {
+            it->subtractionButton->Bind(wxEVT_BUTTON, &AddableType::TakeAwayType, &*it);
+        }
+        FitInside();
+        Show();
     }
     Leader* ref;
     std::vector<EditBox> leaderEditBoxes;

@@ -41,9 +41,10 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<EditBox>& EditValues, const 
 void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i, Leader& refferedLeader)
 {
     panes.emplace_back();
-    panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY);
+    panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY, Vals);
+    //panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY);
     //panes.back()->SetSizer(sizer);
-    panes.back()->FitInside();
+    /*panes.back()->FitInside();
     for (int j = 0; j < Vals.size(); j++)
     {
         EditBoxVals val;
@@ -59,13 +60,17 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const s
         panes.back()->leaderEditBoxes.emplace_back(val);
         //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().name);
         //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().value);
-    }
+    }*/
     panes.back()->AddBoxesToSizer();
     panes.back()->addPopulation = new wxButton(panes.back(), wxID_ANY, "add new population");
     panes.back()->sizer->Add(panes.back()->addPopulation);
     LeaderPane* p = panes.back();
     panes.back()->addPopulation->Bind(wxEVT_BUTTON, &LeaderPane::AddPopulation, p);
     panes.back()->LoadPopulations(refferedLeader);
+    panes.back()->addStartingSquad = new wxButton(panes.back(), wxID_ANY, "add new starting squad");
+    panes.back()->sizer->Add(panes.back()->addStartingSquad);
+    panes.back()->addStartingSquad->Bind(wxEVT_BUTTON, &LeaderPane::AddStartingSquad, p);
+    panes.back()->LoadStartingSquads(refferedLeader);
     parent->sizer->Add(panes.back(), wxEXPAND);
     parent->FitInside();
     parent->Show();
@@ -113,14 +118,14 @@ void LeaderUIHandler::DisplayLeaders()
                 { "starting unit offset.z ", std::to_string(leaders[i].startProperties.startUnit.offset.z), &leaders[i].startProperties.startingSquads[0].offset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
                 {"starting unit Socket: ", leaders[i].startProperties.startUnit.socket, &leaders[i].startProperties.startUnit.socket , VarType::eString, wxPoint(), (wxFrame*)parent, 0}
             };
-            for (std::vector<StartingSquad>::iterator it = leaders[i].startProperties.startingSquads.begin(); it != leaders[i].startProperties.startingSquads.end(); it++)
+            /*for (std::vector<StartingSquad>::iterator it = leaders[i].startProperties.startingSquads.begin(); it != leaders[i].startProperties.startingSquads.end(); it++)
             {
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " fly in:", std::string(it->flyIn ? "true" : "false"), &it->flyIn, VarType::eBool, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.x:", std::to_string(it->offset.x), &it->offset.x, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.y:", std::to_string(it->offset.y), &it->offset.y, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
                 vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " unit", it->unitID, &it->unitID, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });
-            }
+            }*/
             /*for (std::vector<PopDefine>::iterator it = leaders[i].populations.begin(); it != leaders[i].populations.end(); it++)
             {
                 vals.emplace_back(EditBoxVals{ "population type :", it->popType, &it->popType, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });

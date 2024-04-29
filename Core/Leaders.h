@@ -140,13 +140,15 @@ struct StartingSquad
     }
     void Save(const std::string& line, std::string& buildSaveString)
     {
-        std::vector<std::string> strings;
+        buildSaveString += "\t\t" + std::string("<StartingSquad FlyIn=") + Stringify(flyIn ? "true" : "false") + " Offset = " + Stringify(offset.GetStringVersion()) + '>' + unitID + "</StartingSquad>\n";
+        /*std::vector<std::string> strings;
         std::vector<std::string> nstrings;
 
         GetAllStringsInLine(line, strings, '"', true, true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
 
         buildSaveString += strings[0] + Stringify(flyIn ? "true" : "false") + strings[2] + Stringify(offset.GetStringVersion()) + '>' + unitID + Fieldify(nstrings[3]) + "\n";
+        */
     }
 };
 
@@ -200,6 +202,10 @@ struct StartingProperties
         for (std::vector<StartingSquad>::iterator it = startingSquads.begin(); it != startingSquads.end(); it++)
         {
             it->Save(line, saveBuildString);
+            //std::getline(file, line);
+        }
+        while (StringContainsSubString(line, "StartingSquad"))
+        {
             std::getline(file, line);
         }
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
