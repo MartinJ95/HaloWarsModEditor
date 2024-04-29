@@ -41,7 +41,7 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<EditBox>& EditValues, const 
 void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const std::vector<EditBoxVals>& Vals, int x, int y, int i, Leader& refferedLeader)
 {
     panes.emplace_back();
-    panes.back() = new LeaderPane(parent, wxID_ANY);
+    panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY);
     //panes.back()->SetSizer(sizer);
     panes.back()->FitInside();
     for (int j = 0; j < Vals.size(); j++)

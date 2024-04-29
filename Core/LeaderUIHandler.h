@@ -7,7 +7,7 @@
 class LeaderPane : public wxScrolledWindow
 {
 public:
-    LeaderPane(wxWindow* parent, wxWindowID ID) : wxScrolledWindow(parent, ID, wxDefaultPosition, wxSize(200, 600))
+    LeaderPane(Leader* Ref, wxWindow* parent, wxWindowID ID) : wxScrolledWindow(parent, ID, wxDefaultPosition, wxSize(200, 600)), ref(Ref)
     {
         sizer = new wxBoxSizer(wxVERTICAL);
         this->SetSizer(sizer);
@@ -26,7 +26,6 @@ public:
     }
     void LoadPopulations(Leader& leader)
     {
-        int uniqueCount = 0;
         for (std::vector<PopDefine>::iterator it = leader.populations.begin(); it != leader.populations.end(); it++)
         {
             populations.emplace_back(this, &populations,
@@ -57,6 +56,19 @@ public:
         {
             it->ApplyChange();
         }
+        if (ref != nullptr)
+        {
+            ref->populations.clear();
+            for (std::vector<AddableType>::iterator it = populations.begin(); it != populations.end(); it++)
+            {
+                ref->populations.emplace_back(
+                    PopDefine{ 
+                        it->editBoxes[0].value->GetValue().ToStdString(),
+                        std::stoi(it->editBoxes[1].value->GetValue().ToStdString()),
+                        std::stoi(it->editBoxes[2].value->GetValue().ToStdString()) }
+                );
+            }
+        }
     }
     void AddPopulation(wxCommandEvent &event)
     {
@@ -86,6 +98,7 @@ public:
     {
 
     }
+    Leader* ref;
     std::vector<EditBox> leaderEditBoxes;
     std::vector<AddableType> populations;
     wxButton* addPopulation;

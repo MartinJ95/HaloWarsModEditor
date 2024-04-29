@@ -313,7 +313,6 @@ public:
             std::getline(file, line);
         }
 
-
         while (StringContainsSubString(line, "<Pop"))
         {
             std::vector<std::string> strings;
@@ -326,7 +325,7 @@ public:
             populations.back().popType = strings[0];
             populations.back().max = std::stoi(strings[1]);
             populations.back().current = std::stoi(nstrings[0]);
-
+            
             std::getline(file, line);
         }
     }
@@ -354,15 +353,11 @@ public:
 
         for (std::vector<PopDefine>::iterator it = populations.begin(); it != populations.end(); it++)
         {
-            std::vector<std::string> strings;
-            std::vector<std::string> nstrings;
-
-            GetAllStringsInLine(line, strings, '"', true, true);
-            GetAllStringsInLine(line, nstrings, { '>',  '<' }, true, true);
-
-            //saveBuildString += strings[0] + Stringify(it->popType) + strings[1] + Stringify(it->max) + Valuefy(it->current) + nstrings[1] + "\n";
-            saveBuildString += strings[0] + Stringify(it->popType) + strings[2] + Stringify(it->max) + '>' + std::to_string(it->current) + Fieldify(nstrings[3]) + "\n";
-
+            saveBuildString += "\t\t" + std::string("<Pop Type = ") + Stringify(it->popType) + std::string(" Max=") + Stringify(std::to_string(it->max)) + '>' + std::to_string(it->current) + std::string("</Pop>\n");
+        }
+        while (StringContainsSubString(line, "<Pop"))
+        {
+            
             std::getline(file, line);
         }
     }
