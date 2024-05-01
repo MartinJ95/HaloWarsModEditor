@@ -9,7 +9,8 @@ enum
     ID_LoadLeaders = 2,
     ID_DisplayLeaders = 3,
     ID_SaveLeaders = 4,
-    ID_BackupLeaders = 5
+    ID_BackupLeaders = 5,
+    ID_AddLeader = 6
 };
 
 enum class VarType

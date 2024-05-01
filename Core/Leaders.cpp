@@ -1,4 +1,5 @@
 #include "Leaders.h"
+#include "LeaderUIHandler.h"
 
 inline void SaveMultipleValues(std::ifstream& file, std::string& line, std::string& saveBuildString, const std::vector<std::string>&& values)
 {
@@ -98,4 +99,16 @@ void CivDetails::Save(std::ifstream& file, std::string& line, std::string& saveB
             std::vector<int>{nameID, descriptionID}
     )
     );
+}
+
+void Leader::RemoveLeader(LeaderUIHandler* ui)
+{
+    for (std::vector<Leader>::iterator it = ui->leaders.begin(); it != ui->leaders.end(); it++)
+    {
+        if (&*it == this)
+        {
+            ui->leaders.erase(it);
+            break;
+        }
+    }
 }

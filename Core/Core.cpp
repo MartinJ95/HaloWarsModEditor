@@ -40,6 +40,7 @@ public:
         leaderMenu->Append(ID_DisplayLeaders, "&Display Leaders");
         leaderMenu->Append(ID_SaveLeaders, "&Save Leaders");
         leaderMenu->Append(ID_BackupLeaders, "&Backup Leaders");
+        leaderMenu->Append(ID_AddLeader, "&Add Leader");
 
         menuBar = new wxMenuBar;
 
@@ -69,7 +70,7 @@ public:
         Bind(wxEVT_MENU, &MyFrame::OnLeaderDisplay, this, ID_DisplayLeaders);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderSave, this, ID_SaveLeaders);
         Bind(wxEVT_MENU, &MyFrame::OnLeaderBackUp, this, ID_BackupLeaders);
-
+        Bind(wxEVT_MENU, &MyFrame::OnLeaderAdd, this, ID_AddLeader);
     }
 private:
     void OnExit(wxCommandEvent& event)
@@ -96,6 +97,12 @@ private:
     void OnLeaderDisplay(wxCommandEvent& event)
     {
         window.leaders.DisplayLeaders();
+    }
+
+    void OnLeaderAdd(wxCommandEvent& event)
+    {
+        window.leaders.leaders.emplace_back();
+        OnLeaderDisplay(event);
     }
 };
 

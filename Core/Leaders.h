@@ -288,6 +288,8 @@ struct PopDefine
     int current;
 };
 
+class LeaderUIHandler;
+
 struct Leader
 {
 public:
@@ -299,6 +301,14 @@ public:
     std::pair<std::string, int> reverseDropCost;
     std::vector<PopDefine> populations;
     bool hasReverseDrop = false;
+    Leader()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            startProperties.leaderResources[i].first = LeaderResources[i];
+            startProperties.leaderResources[i].second = 0;
+        }
+    }
     void Load(std::ifstream& file, std::string& line)
     {
         initialValues.Load(line);
@@ -377,4 +387,5 @@ public:
             std::getline(file, line);
         }
     }
+    void RemoveLeader(LeaderUIHandler* ui);
 };

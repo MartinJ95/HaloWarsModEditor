@@ -113,9 +113,6 @@ void LeaderUIHandler::DisplayLeaders()
                 {"rally point offset.x: ", std::to_string(leaders[i].startProperties.rallyPointOffset.x), &leaders[i].startProperties.rallyPointOffset.x, VarType::eInt, wxPoint(), (wxFrame*)parent, 0},
                 { "rally point offset.y: ", std::to_string(leaders[i].startProperties.rallyPointOffset.y), &leaders[i].startProperties.rallyPointOffset.y, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
                 { "rally point offset.z: ", std::to_string(leaders[i].startProperties.rallyPointOffset.z), &leaders[i].startProperties.rallyPointOffset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
-                {"starting unit offset.x ", std::to_string(leaders[i].startProperties.startUnit.offset.x), &leaders[i].startProperties.startingSquads[0].offset.x, VarType::eInt, wxPoint(), (wxFrame*)parent, 0},
-                { "starting unit offset.y ", std::to_string(leaders[i].startProperties.startUnit.offset.y), &leaders[i].startProperties.startingSquads[0].offset.y, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
-                { "starting unit offset.z ", std::to_string(leaders[i].startProperties.startUnit.offset.z), &leaders[i].startProperties.startingSquads[0].offset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
                 {"starting unit Socket: ", leaders[i].startProperties.startUnit.socket, &leaders[i].startProperties.startUnit.socket , VarType::eString, wxPoint(), (wxFrame*)parent, 0}
             };
             /*for (std::vector<StartingSquad>::iterator it = leaders[i].startProperties.startingSquads.begin(); it != leaders[i].startProperties.startingSquads.end(); it++)
@@ -151,5 +148,22 @@ void LeaderUIHandler::DisplayLeaders()
         parent->Show();
         parent->GetParent()->FitInside();
         parent->GetParent()->Show();
+    }
+}
+
+void LeaderPane::RemoveLeader(wxCommandEvent& event)
+{
+    ElementWindow* parentWindow = (ElementWindow*)GetParent();
+    ref->RemoveLeader(&parentWindow->leaders);
+    for (std::vector<LeaderPane*>::iterator it = parentWindow->leaders.leaderPanes.begin(); it != parentWindow->leaders.leaderPanes.end(); it++)
+    {
+        if (*it == this)
+        {
+            delete* it;
+            parentWindow->leaders.leaderPanes.erase(it);
+            parentWindow->FitInside();
+            parentWindow->Show();
+            break;
+        }
     }
 }

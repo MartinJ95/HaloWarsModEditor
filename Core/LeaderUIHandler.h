@@ -21,6 +21,10 @@ public:
         this->FitInside();
         this->SetScrollRate(0, 5);
 
+        removeLeader = new wxButton(this, wxID_ANY, "remove leader");
+        sizer->Add(removeLeader);
+        removeLeader->Bind(wxEVT_BUTTON, &LeaderPane::RemoveLeader, this);
+
         for (int j = 0; j < Vals.size(); j++)
         {
             EditBoxVals val;
@@ -187,7 +191,9 @@ public:
         FitInside();
         Show();
     }
+    void RemoveLeader(wxCommandEvent& event);
     Leader* ref;
+    wxButton* removeLeader;
     std::vector<EditBox> leaderEditBoxes;
     std::vector<AddableType> populations;
     wxButton* addPopulation;
