@@ -288,6 +288,55 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
         leaderMap.emplace(std::pair<std::string, Leader&>(it->initialValues.originalName, *it));
     }
 
+    bool savingLeader = false;
+
+    while (!file.eof())
+    {
+        std::getline(file, line);
+        if (StringContainsSubString(line, "<Leader"))
+        {
+            std::vector<std::string> subStrings;
+            GetAllStringsInLine(line, subStrings);
+            if (!subStrings.empty()) {
+                if (leaderMap.find(subStrings[0]) != leaderMap.end())
+                {
+                    //found existing leader to override
+                    leaderMap.find(subStrings[0])->second.Save(file, line, str);
+                    leaderMap.erase(subStrings[0]);
+                    //leaderMap.erase(subStrings[0]);
+                    while (!StringContainsSubString(line, "</Leader"))
+                    {
+                        std::getline(file, line);
+                    }
+                }
+            }
+            //leader not editable
+            while (!StringContainsSubString(line, "</Leader"))
+            {
+                str += line + "\n";
+                std::getline(file, line);
+            }
+        }
+        //no leader found
+        if (StringContainsSubString(line, "</Leaders>"))
+        {
+            for (std::unordered_map<std::string, Leader&>::iterator it = leaderMap.begin(); it != leaderMap.end(); it++)
+            {
+                it->second.Save(file, line, str);
+            }
+            str += line + "\n";
+            std::getline(file, line);
+            continue;
+        }
+
+        if (file.eof())
+        {
+            str += line;
+            break;
+        }
+        str += line + "\n";
+    }
+    /*
     while (!file.eof())
     {
         std::getline(file, line);
@@ -313,7 +362,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
             break;
         }
         str += line + "\n";
-    }
+    }*/
 }
 
 

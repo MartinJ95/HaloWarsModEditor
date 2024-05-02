@@ -30,7 +30,6 @@ void InitialLeaderVals::Load(const std::string& str)
 {
     std::vector<std::string> vals;
 
-    bool hasAlpha = false;
     if (StringContainsSubString(str, "Alpha"))
     {
         hasAlpha = true;
@@ -47,7 +46,6 @@ void InitialLeaderVals::Load(const std::string& str)
 
 void InitialLeaderVals::Save(const std::string& line, std::string& saveBuildString)
 {
-    bool hasAlpha = false;
     if (StringContainsSubString(line, "Alpha"))
     {
         hasAlpha = true;
@@ -55,15 +53,21 @@ void InitialLeaderVals::Save(const std::string& line, std::string& saveBuildStri
 
     std::vector<std::string> subStrings;
     GetAllStringsInLine(line, subStrings, { '"', '"' }, true);
+    /*
     saveBuildString += (subStrings[0] + Stringify(name) + subStrings[1] + Stringify(iconPath));
-
+    <Leader Name = "Cutter" Icon = "ui\game\icon\unsc\leader\Captain Cutter" LeaderPickerOrder = "2" StatsID = "1" DefaultPlayerSlotFlags = "0x81">
+        saveBuildString += "\t" + "<Leader Name = " + Stringify(name) + " Icon = " + Stringify(iconPath);
+    */
+    //<Leader Name = "Cutter" Icon = "ui\game\icon\unsc\leader\Captain Cutter" LeaderPickerOrder = "2" StatsID = "1" DefaultPlayerSlotFlags = "0x81">
+    saveBuildString += "\t\t" + std::string("<Leader Name = ") + Stringify(name) + " Icon = " + Stringify(iconPath) + " ";
     if (hasAlpha)
     {
-        saveBuildString += (subStrings[2] + Stringify("0"));
+        //saveBuildString += (subStrings[2] + Stringify("0"));
+        saveBuildString += (" Alpha=" + Stringify("0"));
     }
-
-    saveBuildString += (subStrings[2 + hasAlpha] + Stringify(leaderPickOrder) + subStrings[3 + hasAlpha] +
-        Stringify(statsID) + subStrings[4 + hasAlpha] + Stringify(defaultPlayerSlotFlags) + subStrings[5 + hasAlpha] + "\n");
+    saveBuildString += " LeaderPickOrder = " + Stringify(leaderPickOrder) + " StatdsID = " + Stringify(statsID) + " DefaultPlayerSlotsFlags = " + Stringify(defaultPlayerSlotFlags) + '>' + "\n";
+    /*saveBuildString += (subStrings[2 + hasAlpha] + Stringify(leaderPickOrder) + subStrings[3 + hasAlpha] +
+        Stringify(statsID) + subStrings[4 + hasAlpha] + Stringify(defaultPlayerSlotFlags) + subStrings[5 + hasAlpha] + "\n");*/
 }
 
 void CivDetails::Load(std::string& str, std::ifstream& Stream)
@@ -89,16 +93,27 @@ void CivDetails::Save(std::ifstream& file, std::string& line, std::string& saveB
 {
     std::vector<std::string> substrings;
 
+    /*
     SaveMultipleValues(file, line, saveBuildString,
         std::move(
             std::vector<std::string>{civ, tech}
     )
     );
+    */
+    std::vector<std::pair<std::string, std::string>> vals{
+        {"Civ", civ}, {"Tech", tech}, {"NameID", std::to_string(nameID)}, {"DescriptionID", std::to_string(descriptionID)}
+    };
+    for (std::vector<std::pair<std::string, std::string>>::iterator it = vals.begin(); it != vals.end(); it++)
+    {
+        saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->second) + "\n";
+    }
+    /*
     SaveMultipleValues(file, line, saveBuildString,
         std::move(
             std::vector<int>{nameID, descriptionID}
     )
     );
+    */
 }
 
 void Leader::RemoveLeader(LeaderUIHandler* ui)

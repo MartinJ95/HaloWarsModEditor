@@ -26,6 +26,7 @@ struct InitialLeaderVals
     int leaderPickOrder;
     int statsID;
     std::string defaultPlayerSlotFlags;
+    bool hasAlpha = false;
     void Load(const std::string& str);
     void Save(const std::string& line, std::string& saveBuildString);
 };
@@ -68,7 +69,7 @@ struct FlashDetails
     void Save(std::ifstream& file, std::string& line, std::string& saveBuildString)
     {
         std::vector<std::string> substrings;
-
+        /*
         GetAllStringsInLine(line, substrings, { '>', '<' }, true, true);
         //saveBuildString += substrings[0] + Valuefy(flashID) + substrings[1];
         saveBuildString += substrings[0] + Fieldify(substrings[1]) + std::to_string(flashID) + Fieldify(substrings[3]) + "\n";
@@ -81,6 +82,15 @@ struct FlashDetails
             flashImg, flashPortrait, UIControlBackground
         }
         ));
+        */
+        std::vector<std::pair<std::string, std::string>>vals{
+            {"FlashCivID", std::to_string(flashID)}, {"FlashImg", flashImg}, {"FlashPortrait", flashPortrait}, {"UIControlBackground", UIControlBackground}
+        };
+
+        for (std::vector<std::pair<std::string, std::string>>::iterator it = vals.begin(); it != vals.end(); it++)
+        {
+            saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->second) + "\n";
+        }
     }
 };
 
@@ -114,7 +124,10 @@ struct StartingUnit
 
         GetAllStringsInLine(line, strings, '"', true, true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        buildSaveString += strings[0] + Stringify(offset.GetStringVersion()) + strings[2] + Stringify(buildOther) + strings[4] + Stringify(doppleOnStart ? "true" : "false") + '>' + socket + Fieldify(nstrings[3]) + "\n";
+        //buildSaveString += strings[0] + Stringify(offset.GetStringVersion()) + strings[2] + Stringify(buildOther) + strings[4] + Stringify(doppleOnStart ? "true" : "false") + '>' + socket + Fieldify(nstrings[3]) + "\n";
+        //<StartingUnit Offset = "0,0,0" BuildOther = "cov_bldg_builder_02" DoppleOnStart = "true">game_base_socket_01< / StartingUnit>
+        buildSaveString += "\t\t" + std::string("<StartingUnit Offset = ") + Stringify(offset.GetStringVersion()) + " BuildOther = " + Stringify(buildOther) + " DoppleOnStart = " + Stringify(doppleOnStart ? "true" : "false") +
+            '>' + socket + "</StartingUnit>" + "\n";
     }
 };
 
@@ -202,13 +215,17 @@ struct StartingProperties
 
         for (int i = 0; i < 4; i++)
         {
+            /*
             GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
             saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + std::to_string(leaderResources[i].second) + Fieldify(nstrings[3]) + "\n";
             std::getline(file, line);
+            */
+            //<Resource Type="Supplies">800</Resource>
+            saveBuildString += "\t\t" + std::string("<Resource Type=") + Stringify(leaderResources->first) + '>' + std::to_string(leaderResources->second ) + "</Resources>" + "\n";
         }
 
         startUnit.Save(line, saveBuildString);
-        std::getline(file, line);
+        //std::getline(file, line);
         for (std::vector<StartingSquad>::iterator it = startingSquads.begin(); it != startingSquads.end(); it++)
         {
             it->Save(line, saveBuildString);
@@ -216,11 +233,13 @@ struct StartingProperties
         }
         while (StringContainsSubString(line, "StartingSquad"))
         {
-            std::getline(file, line);
+            //std::getline(file, line);
         }
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
-        saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + rallyPointOffset.GetStringVersion() + Fieldify(nstrings[3]) + "\n";
-        std::getline(file, line);
+        //saveBuildString += nstrings[0] + Fieldify(nstrings[1]) + rallyPointOffset.GetStringVersion() + Fieldify(nstrings[3]) + "\n";
+        //std::getline(file, line);
+        //<RallyPointOffset>50, 0, 0 < / RallyPointOffset >
+        saveBuildString += "\t\t" + std::string("<RallyPointOffset>") + rallyPointOffset.GetStringVersion() + "</RallyPointOffset>" + "\n";
     }
 };
 
@@ -260,24 +279,36 @@ struct RepairProperties
     {
         std::vector<std::string> strings;
         std::vector<std::string> nstrings;
-
+        /*
         auto save = [](const std::string& str, std::string& line, std::ifstream& f, std::string& sbs, std::vector<std::string>& nstrings) {
             GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
             sbs += nstrings[0] + Fieldify(nstrings[1]) + str + Fieldify(nstrings[3]) + "\n";
 
             std::getline(f, line);
             };
+        */
 
-        save(std::to_string(repairRate), line, file, saveBuildString, nstrings);
-        save(std::to_string(repairDelay), line, file, saveBuildString, nstrings);
+        auto save = [](const std::string& field, const std::string& value, std::string& saveBuildString)
+            {
+                saveBuildString += "\t\t" + Fieldify(field) + value + Fieldify("/" + field) + "\n";
+            };
 
+        //save(std::to_string(repairRate), line, file, saveBuildString, nstrings);
+        //save(std::to_string(repairDelay), line, file, saveBuildString, nstrings);
+        save(std::string("RepairRate"), std::to_string(repairRate), saveBuildString);
+
+        /*
         GetAllStringsInLine(line, strings, '"', true);
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
 
         saveBuildString += strings[0] + Stringify(repairCost.first) + '>' + std::to_string(repairCost.second) + Fieldify(nstrings[3]) + "\n";
         std::getline(file, line);
+        */
+        //<RepairCost Type = "Supplies">35 < / RepairCost >
+        saveBuildString += "\t\t" + std::string("<RepairCost Type = ") + Stringify(repairCost.first) + ">" + "</RepairCost>" + "\n";
 
-        save(std::to_string(repairTime), line, file, saveBuildString, nstrings);
+        //save(std::to_string(repairTime), line, file, saveBuildString, nstrings);
+        save(std::string("RepairTime"), std::to_string(repairTime), saveBuildString);
     }
 };
 
@@ -365,6 +396,7 @@ public:
         repairProperties.Save(file, line, saveBuildString);
         if (hasReverseDrop)
         {
+            /*
             std::vector<std::string> strings;
             std::vector<std::string> nstrings;
 
@@ -375,17 +407,22 @@ public:
             saveBuildString += strings[0] + Stringify(reverseDropCost.first) + '>' + std::to_string(reverseDropCost.second) + Fieldify(nstrings[3]) + "\n";
 
             std::getline(file, line);
+            */
+            //<ReverseHotDropCost Type = "Supplies">100 < / ReverseHotDropCost >
+            saveBuildString += "\t\t" + std::string("<ReverseHotDropCost Type = ") + Stringify(reverseDropCost.first) + ">" + std::to_string(reverseDropCost.second) + "</ReverseHotDropCost>" + "\n";
         }
 
         for (std::vector<PopDefine>::iterator it = populations.begin(); it != populations.end(); it++)
         {
             saveBuildString += "\t\t" + std::string("<Pop Type = ") + Stringify(it->popType) + std::string(" Max=") + Stringify(std::to_string(it->max)) + '>' + std::to_string(it->current) + std::string("</Pop>\n");
         }
+        /*
         while (StringContainsSubString(line, "<Pop"))
         {
             
             std::getline(file, line);
         }
+        */
     }
     void RemoveLeader(LeaderUIHandler* ui);
 };
