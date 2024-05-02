@@ -313,7 +313,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
             //leader not editable
             while (!StringContainsSubString(line, "</Leader"))
             {
-                str += line + "\n";
+                str += line + '\n';
                 std::getline(file, line);
             }
         }
@@ -323,8 +323,9 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
             for (std::unordered_map<std::string, Leader&>::iterator it = leaderMap.begin(); it != leaderMap.end(); it++)
             {
                 it->second.Save(file, line, str);
+                str += std::string("\t\t") + "</Leader>" + '\n';
             }
-            str += line + "\n";
+            str += line + '\n';
             std::getline(file, line);
             continue;
         }
@@ -334,7 +335,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
             str += line;
             break;
         }
-        str += line + "\n";
+        str += line + '\n';
     }
     /*
     while (!file.eof())
@@ -370,9 +371,10 @@ inline void SaveLeaders(std::vector<Leader>& leaders)
 {
     std::string saveBuildString = "";
     BuildSaveString(saveBuildString, leaders);
-    std::ofstream file(leadersPath);
+    std::ofstream file(leadersPath, std::ios_base::binary);
     //saveBuildString.erase(saveBuildString.begin() + saveBuildString.size() - 1);
-    file << saveBuildString;
+    //file << saveBuildString;
+    file.write(saveBuildString.c_str(), saveBuildString.size());
     file.close();
 }
 

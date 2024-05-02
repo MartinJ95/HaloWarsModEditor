@@ -59,13 +59,13 @@ void InitialLeaderVals::Save(const std::string& line, std::string& saveBuildStri
         saveBuildString += "\t" + "<Leader Name = " + Stringify(name) + " Icon = " + Stringify(iconPath);
     */
     //<Leader Name = "Cutter" Icon = "ui\game\icon\unsc\leader\Captain Cutter" LeaderPickerOrder = "2" StatsID = "1" DefaultPlayerSlotFlags = "0x81">
-    saveBuildString += "\t\t" + std::string("<Leader Name = ") + Stringify(name) + " Icon = " + Stringify(iconPath) + " ";
+    saveBuildString += "\t\t" + std::string("<Leader Name=") + Stringify(name) + " Icon=" + Stringify(iconPath);
     if (hasAlpha)
     {
         //saveBuildString += (subStrings[2] + Stringify("0"));
         saveBuildString += (" Alpha=" + Stringify("0"));
     }
-    saveBuildString += " LeaderPickOrder = " + Stringify(leaderPickOrder) + " StatdsID = " + Stringify(statsID) + " DefaultPlayerSlotsFlags = " + Stringify(defaultPlayerSlotFlags) + '>' + "\n";
+    saveBuildString += " LeaderPickerOrder=" + Stringify(leaderPickOrder) + " StatsID=" + Stringify(statsID) + " DefaultPlayerSlotsFlags=" + Stringify(defaultPlayerSlotFlags) + '>' + '\n';
     /*saveBuildString += (subStrings[2 + hasAlpha] + Stringify(leaderPickOrder) + subStrings[3 + hasAlpha] +
         Stringify(statsID) + subStrings[4 + hasAlpha] + Stringify(defaultPlayerSlotFlags) + subStrings[5 + hasAlpha] + "\n");*/
 }
@@ -105,7 +105,7 @@ void CivDetails::Save(std::ifstream& file, std::string& line, std::string& saveB
     };
     for (std::vector<std::pair<std::string, std::string>>::iterator it = vals.begin(); it != vals.end(); it++)
     {
-        saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->second) + "\n";
+        saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->first) + "\n";
     }
     /*
     SaveMultipleValues(file, line, saveBuildString,

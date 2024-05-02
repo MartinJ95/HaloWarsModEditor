@@ -89,7 +89,7 @@ struct FlashDetails
 
         for (std::vector<std::pair<std::string, std::string>>::iterator it = vals.begin(); it != vals.end(); it++)
         {
-            saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->second) + "\n";
+            saveBuildString += "\t\t" + Fieldify(it->first) + it->second + Fieldify('/' + it->first) + '\n';
         }
     }
 };
@@ -126,7 +126,7 @@ struct StartingUnit
         GetAllStringsInLine(line, nstrings, { '>', '<' }, true, true);
         //buildSaveString += strings[0] + Stringify(offset.GetStringVersion()) + strings[2] + Stringify(buildOther) + strings[4] + Stringify(doppleOnStart ? "true" : "false") + '>' + socket + Fieldify(nstrings[3]) + "\n";
         //<StartingUnit Offset = "0,0,0" BuildOther = "cov_bldg_builder_02" DoppleOnStart = "true">game_base_socket_01< / StartingUnit>
-        buildSaveString += "\t\t" + std::string("<StartingUnit Offset = ") + Stringify(offset.GetStringVersion()) + " BuildOther = " + Stringify(buildOther) + " DoppleOnStart = " + Stringify(doppleOnStart ? "true" : "false") +
+        buildSaveString += "\t\t" + std::string("<StartingUnit Offset=") + Stringify(offset.GetStringVersion()) + " BuildOther=" + Stringify(buildOther) + " DoppleOnStart=" + Stringify(doppleOnStart ? "true" : "false") +
             '>' + socket + "</StartingUnit>" + "\n";
     }
 };
@@ -153,7 +153,7 @@ struct StartingSquad
     }
     void Save(const std::string& line, std::string& buildSaveString)
     {
-        buildSaveString += "\t\t" + std::string("<StartingSquad FlyIn=") + Stringify(flyIn ? "true" : "false") + " Offset = " + Stringify(offset.GetStringVersion()) + '>' + unitID + "</StartingSquad>\n";
+        buildSaveString += "\t\t" + std::string("<StartingSquad FlyIn=") + Stringify(flyIn ? "true" : "false") + " Offset=" + Stringify(offset.GetStringVersion()) + '>' + unitID + "</StartingSquad>\n";
         /*std::vector<std::string> strings;
         std::vector<std::string> nstrings;
 
@@ -221,7 +221,7 @@ struct StartingProperties
             std::getline(file, line);
             */
             //<Resource Type="Supplies">800</Resource>
-            saveBuildString += "\t\t" + std::string("<Resource Type=") + Stringify(leaderResources->first) + '>' + std::to_string(leaderResources->second ) + "</Resources>" + "\n";
+            saveBuildString += "\t\t" + std::string("<Resource Type=") + Stringify(leaderResources[i].first) + '>' + std::to_string(leaderResources[i].second) + "</Resource>" + "\n";
         }
 
         startUnit.Save(line, saveBuildString);
@@ -296,6 +296,7 @@ struct RepairProperties
         //save(std::to_string(repairRate), line, file, saveBuildString, nstrings);
         //save(std::to_string(repairDelay), line, file, saveBuildString, nstrings);
         save(std::string("RepairRate"), std::to_string(repairRate), saveBuildString);
+        save(std::string("RepairDelay"), std::to_string(repairDelay), saveBuildString);
 
         /*
         GetAllStringsInLine(line, strings, '"', true);
@@ -305,7 +306,7 @@ struct RepairProperties
         std::getline(file, line);
         */
         //<RepairCost Type = "Supplies">35 < / RepairCost >
-        saveBuildString += "\t\t" + std::string("<RepairCost Type = ") + Stringify(repairCost.first) + ">" + "</RepairCost>" + "\n";
+        saveBuildString += "\t\t" + std::string("<RepairCost Type=") + Stringify(repairCost.first) + ">" + std::to_string(repairCost.second) + "</RepairCost>" + "\n";
 
         //save(std::to_string(repairTime), line, file, saveBuildString, nstrings);
         save(std::string("RepairTime"), std::to_string(repairTime), saveBuildString);
@@ -409,12 +410,12 @@ public:
             std::getline(file, line);
             */
             //<ReverseHotDropCost Type = "Supplies">100 < / ReverseHotDropCost >
-            saveBuildString += "\t\t" + std::string("<ReverseHotDropCost Type = ") + Stringify(reverseDropCost.first) + ">" + std::to_string(reverseDropCost.second) + "</ReverseHotDropCost>" + "\n";
+            saveBuildString += "\t\t" + std::string("<ReverseHotDropCost Type=") + Stringify(reverseDropCost.first) + ">" + std::to_string(reverseDropCost.second) + "</ReverseHotDropCost>" + "\n";
         }
 
         for (std::vector<PopDefine>::iterator it = populations.begin(); it != populations.end(); it++)
         {
-            saveBuildString += "\t\t" + std::string("<Pop Type = ") + Stringify(it->popType) + std::string(" Max=") + Stringify(std::to_string(it->max)) + '>' + std::to_string(it->current) + std::string("</Pop>\n");
+            saveBuildString += "\t\t" + std::string("<Pop Type=") + Stringify(it->popType) + std::string(" Max=") + Stringify(std::to_string(it->max)) + '>' + std::to_string(it->current) + std::string("</Pop>\n");
         }
         /*
         while (StringContainsSubString(line, "<Pop"))
