@@ -56,7 +56,7 @@ void InitialLeaderVals::Save(const std::string& line, std::string& saveBuildStri
     {
         saveBuildString += (" Alpha=" + Stringify("0"));
     }
-    saveBuildString += " LeaderPickerOrder=" + Stringify(leaderPickOrder) + " StatsID=" + Stringify(statsID) + " DefaultPlayerSlotsFlags=" + Stringify(defaultPlayerSlotFlags) + '>' + '\n';
+    saveBuildString += " LeaderPickerOrder=" + Stringify(leaderPickOrder) + " StatsID=" + Stringify(statsID) + " DefaultPlayerSlotFlags=" + Stringify(defaultPlayerSlotFlags) + '>' + '\n';
 }
 
 void CivDetails::Load(std::string& str, std::ifstream& Stream)
