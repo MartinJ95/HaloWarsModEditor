@@ -125,7 +125,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
                 if (leaderMap.find(subStrings[0]) != leaderMap.end())
                 {
                     //found existing leader to override
-                    leaderMap.find(subStrings[0])->second.Save(file, line, str);
+                    leaderMap.find(subStrings[0])->second.Save(line, str);
                     leaderMap.erase(subStrings[0]);
                     //leaderMap.erase(subStrings[0]);
                     while (!StringContainsSubString(line, "</Leader"))
@@ -146,7 +146,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
         {
             for (std::unordered_map<std::string, Leader&>::iterator it = leaderMap.begin(); it != leaderMap.end(); it++)
             {
-                it->second.Save(file, line, str);
+                it->second.Save(line, str);
                 str += std::string("\t\t") + "</Leader>" + '\n';
             }
             str += line + '\n';

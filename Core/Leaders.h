@@ -119,6 +119,6 @@ public:
         }
     }
     void Load(std::ifstream& file, std::string& line);
-    void Save(std::string& saveBuildString);
+    void Save(std::string& line, std::string& saveBuildString);
     void RemoveLeader(LeaderUIHandler* ui);
 };

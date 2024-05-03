@@ -138,9 +138,9 @@ void Leader::Load(std::ifstream& file, std::string& line)
     }
 }
 
-void Leader::Save(std::string& saveBuildString)
+void Leader::Save(std::string& line, std::string& saveBuildString)
 {
-    initialValues.Save(saveBuildString);
+    initialValues.Save(line, saveBuildString);
     civDetails.Save(saveBuildString);
     flashDetails.Save(saveBuildString);
     startProperties.Save(saveBuildString);
