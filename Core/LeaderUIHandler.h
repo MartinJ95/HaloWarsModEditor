@@ -127,7 +127,7 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
                     //found existing leader to override
                     leaderMap.find(subStrings[0])->second.Save(line, str);
                     leaderMap.erase(subStrings[0]);
-                    //leaderMap.erase(subStrings[0]);
+
                     while (!StringContainsSubString(line, "</Leader"))
                     {
                         std::getline(file, line);
@@ -161,33 +161,6 @@ inline void BuildSaveString(std::string& str, std::vector<Leader>& leaders)
         }
         str += line + '\n';
     }
-    /*
-    while (!file.eof())
-    {
-        std::getline(file, line);
-        if (StringContainsSubString(line, "<Leader"))
-        {
-            std::vector<std::string> subStrings;
-            GetAllStringsInLine(line, subStrings);
-            if (!subStrings.empty()) {
-                if (leaderMap.find(subStrings[0]) != leaderMap.end())
-                {
-                    //found existing leader to override
-                    leaderMap.find(subStrings[0])->second.Save(file, line, str);
-                    leaderMap.erase(subStrings[0]);
-                    //leaderMap.erase(subStrings[0]);
-                }
-            }
-            //leader not editable
-        }
-        //no leader found
-        if (file.eof())
-        {
-            str += line;
-            break;
-        }
-        str += line + "\n";
-    }*/
 }
 
 
@@ -196,8 +169,7 @@ inline void SaveLeaders(std::vector<Leader>& leaders)
     std::string saveBuildString = "";
     BuildSaveString(saveBuildString, leaders);
     std::ofstream file(leadersPath, std::ios_base::binary);
-    //saveBuildString.erase(saveBuildString.begin() + saveBuildString.size() - 1);
-    //file << saveBuildString;
+
     file.write(saveBuildString.c_str(), saveBuildString.size());
     file.close();
 }
