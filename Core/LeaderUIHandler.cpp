@@ -232,25 +232,7 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const s
 {
     panes.emplace_back();
     panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY, Vals);
-    //panes.back() = new LeaderPane(&refferedLeader, parent, wxID_ANY);
-    //panes.back()->SetSizer(sizer);
-    /*panes.back()->FitInside();
-    for (int j = 0; j < Vals.size(); j++)
-    {
-        EditBoxVals val;
-        //final.frame = Vals[j].frame;
-        //final.frame = scrolledWindow;
-        val.frame = leaderPanes.back();
-        val.name = Vals[j].name;
-        val.existingValue = Vals[j].existingValue;
-        val.type = Vals[j].type;
-        val.val = Vals[j].val;
-        val.ID = 50 + j + (50 * i);
-        val.position = wxPoint(x, y + y * j);
-        panes.back()->leaderEditBoxes.emplace_back(val);
-        //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().name);
-        //panes.back()->sizer->Add(panes.back()->leaderEditBoxes.back().value);
-    }*/
+
     panes.back()->AddBoxesToSizer();
     panes.back()->addPopulation = new wxButton(panes.back(), wxID_ANY, "add new population");
     panes.back()->sizer->Add(panes.back()->addPopulation);
@@ -269,12 +251,6 @@ void LeaderUIHandler::ShowLeaderDetails(std::vector<LeaderPane*>& panes, const s
 void LeaderUIHandler::DisplayLeaders()
 {
     {
-        /*for (auto& t : leaderDetails)
-        {
-            delete t;
-        }*/
-        //leaderDetails.clear();
-        //leaderEditBoxes.clear();
         for (std::vector<LeaderPane*>::reverse_iterator rit = leaderPanes.rbegin(); rit != leaderPanes.rend(); rit++)
         {
             delete* rit;
@@ -305,20 +281,6 @@ void LeaderUIHandler::DisplayLeaders()
                 { "rally point offset.z: ", std::to_string(leaders[i].startProperties.rallyPointOffset.z), &leaders[i].startProperties.rallyPointOffset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 },
                 {"starting unit Socket: ", leaders[i].startProperties.startUnit.socket, &leaders[i].startProperties.startUnit.socket , VarType::eString, wxPoint(), (wxFrame*)parent, 0}
             };
-            /*for (std::vector<StartingSquad>::iterator it = leaders[i].startProperties.startingSquads.begin(); it != leaders[i].startProperties.startingSquads.end(); it++)
-            {
-                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " fly in:", std::string(it->flyIn ? "true" : "false"), &it->flyIn, VarType::eBool, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.x:", std::to_string(it->offset.x), &it->offset.x, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.y:", std::to_string(it->offset.y), &it->offset.y, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " offset.z:", std::to_string(it->offset.z), &it->offset.z, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "start squad " + std::to_string(i) + " unit", it->unitID, &it->unitID, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });
-            }*/
-            /*for (std::vector<PopDefine>::iterator it = leaders[i].populations.begin(); it != leaders[i].populations.end(); it++)
-            {
-                vals.emplace_back(EditBoxVals{ "population type :", it->popType, &it->popType, VarType::eString, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "population max :", std::to_string(it->max), &it->max, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-                vals.emplace_back(EditBoxVals{ "population current :", std::to_string(it->current), &it->current, VarType::eInt, wxPoint(), (wxFrame*)parent, 0 });
-            }*/
             ShowLeaderDetails(leaderPanes, vals,
                 400 * i,
                 20,

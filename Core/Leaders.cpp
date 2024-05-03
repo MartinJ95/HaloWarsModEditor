@@ -273,13 +273,6 @@ void StartingProperties::Load(std::string& str, std::ifstream& Stream)
         std::getline(Stream, str);
     }
 
-    /*
-    startingSquads.emplace_back();
-    startingSquads.back().Load(str, strings, nstrings);
-
-    std::getline(Stream, str);
-    */
-
     std::vector<std::string> vecVals;
 
     GetAllStringsInLine(str, nstrings, { '>', '<' });
