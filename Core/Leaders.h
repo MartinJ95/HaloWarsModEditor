@@ -38,7 +38,7 @@ struct CivDetails
     int nameID;
     int descriptionID;
     void Load(std::string& str, std::ifstream& Stream);
-    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString);
+    void Save(std::string& saveBuildString);
 };
 
 struct FlashDetails
@@ -48,7 +48,7 @@ struct FlashDetails
     std::string flashPortrait;
     std::string UIControlBackground;
     void Load(std::string& str, std::ifstream& Stream);
-    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString);
+    void Save(std::string& saveBuildString);
 };
 
 struct StartingUnit
@@ -58,7 +58,7 @@ struct StartingUnit
     bool doppleOnStart;
     std::string socket;
     void Load(const std::string& str, std::vector<std::string>& strings, std::vector<std::string>& nstrings);
-    void Save(const std::string& line, std::string& buildSaveString);
+    void Save(std::string& buildSaveString);
 };
 
 struct StartingSquad
@@ -67,7 +67,7 @@ struct StartingSquad
     Vec3 offset;
     std::string unitID;
     void Load(const std::string& str, std::vector<std::string>& strings, std::vector<std::string>& nstrings);
-    void Save(const std::string& line, std::string& buildSaveString);
+    void Save(std::string& buildSaveString);
 };
 
 struct StartingProperties
@@ -77,7 +77,7 @@ struct StartingProperties
     std::vector<StartingSquad> startingSquads;
     Vec3 rallyPointOffset;
     void Load(std::string& str, std::ifstream& Stream);
-    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString);
+    void Save(std::string& saveBuildString);
 };
 
 struct RepairProperties
@@ -87,7 +87,7 @@ struct RepairProperties
     std::pair<std::string, int> repairCost;
     int repairTime;
     void Load(std::string& str, std::ifstream& Stream);
-    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString);
+    void Save(std::string& saveBuildString);
 };
 
 struct PopDefine
@@ -119,6 +119,6 @@ public:
         }
     }
     void Load(std::ifstream& file, std::string& line);
-    void Save(std::ifstream& file, std::string& line, std::string& saveBuildString);
+    void Save(std::string& saveBuildString);
     void RemoveLeader(LeaderUIHandler* ui);
 };
